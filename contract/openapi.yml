@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: National Parks API
+  version: 0.1.0
+  description: 'A REST API supporting GET, POST, PUT, and DELETE operations for data around the American National Parks system. From Yosemite to Glacier, we cover the data points such as location, acreage, and more.'
+  contact:
+    name: Matt Trask
+    email: mjftrask@gmail.com
+    url: nationalparks.io
+servers:
+  - url: 'http://localhost'
+    description: Local url for testing
+tags: null
+paths:
+  /api/national-parks:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Park'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      from:
+                        type: integer
+                      last_page:
+                        type: integer
+                      links:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Link'
+                      path:
+                        type: string
+                      per_page:
+                        type: integer
+                      to:
+                        type: integer
+                      total:
+                        type: integer
+                      count:
+                        type: integer
+              examples:
+                GetParks:
+                  value:
+                    data:
+                      - id: 0
+                        parkUuid: string
+                        name: string
+                        yearEstablished: 0
+                        state: string
+      operationId: get-parks
+      description: Operation to get all parks. Filtering is allowed by either year established or by state currently.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: state
+          description: filter by state
+        - schema:
+            type: string
+          in: query
+          name: year
+          description: filter by year established
+        - schema:
+            type: string
+          in: query
+          name: count
+          description: increase or decrease amount of results in the response
+      requestBody:
+        content:
+          application/json:
+            schema: {}
+            examples: {}
+        description: 'Body contains the park name, year established, park uuid, last updated, and state.'
+    parameters: []
+  '/api/national-parks/{uuid}':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Park'
+              examples:
+                GetPark:
+                  value:
+                    data:
+                      id: 0
+                      parkUuid: string
+                      name: string
+                      yearEstablished: 0
+                      state: string
+      operationId: get-api-national-parks-uuid
+      description: Retrieve specific park by the park uuid
+components:
+  schemas:
+    Park:
+      title: Park
+      type: object
+      properties:
+        id:
+          type: integer
+          description: |
+            Auto-incrementing id
+        parkUuid:
+          type: string
+          description: Uuid v4 for unique identification
+        name:
+          type: string
+          description: Park name
+        yearEstablished:
+          type: number
+          description: year that the park was established
+        state:
+          type: string
+          description: State where the park is. Can be used to filter results
+    Link:
+      title: Link
+      type: object
+      properties:
+        url:
+          type:
+            - string
+            - 'null'
+          description: url for next link
+        label:
+          type:
+            - string
+            - integer
+          description: page label
+        active:
+          type: boolean
+          description: flag for if the link is the active link
+  responses: null
+  headers: null
+  parameters: null
+  links: null
+  examples: null
